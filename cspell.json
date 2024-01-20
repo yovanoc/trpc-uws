@@ -8,9 +8,5 @@
 		"node_modules",
 		"pnpm-lock.yaml"
 	],
-	"words": [
-		"\u001b[31mknip\u001b[39m",
-		"\u001b[31mpackagejson\u001b[39m",
-		"\u001b[31mtsup\u001b[39m"
-	]
+	"words": ["knip", "packagejson", "tsup", "YOVANOVITCH"]
 }
