@@ -59,7 +59,7 @@ function makeRouter() {
 			ctx.res.writeStatus("400");
 			ctx.res.writeHeader("manual", "header");
 			ctx.res.writeHeader("set-cookie", "lala=true");
-			ctx.res.writeHeader("set-cookie", "anotherone=false");
+			ctx.res.writeHeader("set-cookie", "another-one=false");
 			// ctx.res.
 			return "status 400";
 		}),
@@ -374,7 +374,7 @@ test("aborting requests works", async () => {
 	try {
 		await client.test.mutate(
 			{
-				value: "haha",
+				value: "test",
 			},
 			{
 				signal: ac.signal,
@@ -479,7 +479,7 @@ test(
 	async () => {
 		expect.assertions(2);
 		// const host = `localhost:${testPort}/trpc?user=user1`; // weClient can inject values via query string
-		const host = `localhost:${testPort}/trpc?user=user1&fail=yess`; // weClient can inject values via query string
+		const host = `localhost:${testPort}/trpc?user=user1&fail=yes`; // weClient can inject values via query string
 		const wsClient = createWSClient({
 			WebSocket,
 			retryDelayMs: (i) => {

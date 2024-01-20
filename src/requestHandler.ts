@@ -81,7 +81,7 @@ export function uWsHTTPRequestHandler<
 		res.cork(() => {
 			res.writeStatus(result.status.toString()); // is this okay?
 
-			// oldschool way of writing headers
+			// old school way of writing headers
 			for (const [key, value] of Object.entries(result.headers ?? {})) {
 				if (typeof value === "undefined") {
 					continue;

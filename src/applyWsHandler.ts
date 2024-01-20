@@ -33,7 +33,7 @@ import { extractAndWrapHttpRequest } from "./utils.js";
 interface UWSBuiltInOpts {
 	/** Whether or not we should automatically close the socket when a message is dropped due to backpressure. Defaults to false. */
 	closeOnBackpressureLimit?: number;
-	/** What permessage-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
+	/** What per message-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
 	compression?: CompressOptions;
 	/**
 	 * Maximum amount of seconds that may pass without sending or getting a message. Connection is closed if this timeout passes. Resolution (granularity) for timeouts are typically 4 seconds, rounded to closest.

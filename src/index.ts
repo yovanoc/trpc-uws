@@ -1,3 +1,3 @@
-export { WSSHandlerOptions, applyWSHandler } from "./applyWsHandler.js";
-export { createUWebSocketsHandler } from "./createUWebsocketsHandler.js";
+export { type WSSHandlerOptions, applyWSHandler } from "./applyWsHandler.js";
+export { createUWebSocketsHandler } from "./createUWebSocketsHandler.js";
 export * from "./types.js";

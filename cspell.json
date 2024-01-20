@@ -8,5 +8,13 @@
 		"node_modules",
 		"pnpm-lock.yaml"
 	],
-	"words": ["knip", "packagejson", "tsup", "YOVANOVITCH"]
+	"words": [
+		"knip",
+		"packagejson",
+		"tsup",
+		"YOVANOVITCH",
+		"unws",
+		"Unsubscribable",
+		"KATT"
+	]
 }
