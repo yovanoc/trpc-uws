@@ -4,10 +4,21 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@trpc/server':
+    specifier: 11.0.0-next-beta.221
+    version: 11.0.0-next-beta.221
+  uWebSockets.js:
+    specifier: uNetworking/uWebSockets.js#v20.40.0
+    version: github.com/uNetworking/uWebSockets.js/f97da56fe535bb6d318c62ed31e0f44cef104f05
+
 devDependencies:
   '@release-it/conventional-changelog':
     specifier: ^8.0.1
     version: 8.0.1(release-it@17.0.1)
+  '@trpc/client':
+    specifier: 11.0.0-next-beta.221
+    version: 11.0.0-next-beta.221(@trpc/server@11.0.0-next-beta.221)
   '@types/eslint':
     specifier: ^8.56.2
     version: 8.56.2
@@ -110,12 +121,18 @@ devDependencies:
   typescript:
     specifier: ^5.3.3
     version: 5.3.3
+  unws:
+    specifier: ^0.2.4
+    version: 0.2.4(ws@8.16.0)
   vitest:
     specifier: ^1.2.1
     version: 1.2.1(@types/node@20.11.5)
   yaml-eslint-parser:
     specifier: ^1.2.2
     version: 1.2.2
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 packages:
 
@@ -1409,6 +1426,17 @@ packages:
   /@tootallnate/quickjs-emscripten@0.23.0:
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
     dev: true
+
+  /@trpc/client@11.0.0-next-beta.221(@trpc/server@11.0.0-next-beta.221):
+    resolution: {integrity: sha512-1DQptPbEOt6SgSRBduccAnjl70+EVNiv+C/vbomC1PaDNl+FJHJgRruSy5NfM3JLgTlsX5qq+m1h74qrzjwtDA==}
+    peerDependencies:
+      '@trpc/server': 11.0.0-next-beta.221+83786ca57
+    dependencies:
+      '@trpc/server': 11.0.0-next-beta.221
+    dev: true
+
+  /@trpc/server@11.0.0-next-beta.221:
+    resolution: {integrity: sha512-mgTUHGCuYZ3BtF8VlQmeHixKLExcUcElvKNPS2tyhfBZxua36+5mPD2wZ71rMqqwN7NI0FoP1fMjFL/9VVqfEw==}
 
   /@types/eslint@8.56.2:
     resolution: {integrity: sha512-uQDwm1wFHmbBbCZCqAlq6Do9LYwByNZHWzXppSnay9SuwJ+VRbjkbLABer54kcPnMSlG6Fdiy2yaFXm/z9Z5gw==}
@@ -7146,6 +7174,15 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /unws@0.2.4(ws@8.16.0):
+    resolution: {integrity: sha512-/N1ajiqrSp0A/26/LBg7r10fOcPtGXCqJRJ61sijUFoGZMr6ESWGYn7i0cwr7fR7eEECY5HsitqtjGHDZLAu2w==}
+    engines: {node: '>=16.14.0'}
+    peerDependencies:
+      ws: '*'
+    dependencies:
+      ws: 8.16.0
+    dev: true
+
   /update-notifier@7.0.0:
     resolution: {integrity: sha512-Hv25Bh+eAbOLlsjJreVPOs4vd51rrtCrmhyOJtbpAojro34jS4KQaEp4/EvlHJX7jSO42VvEFpkastVyXyIsdQ==}
     engines: {node: '>=18'}
@@ -7482,6 +7519,19 @@ packages:
       typedarray-to-buffer: 3.1.5
     dev: true
 
+  /ws@8.16.0:
+    resolution: {integrity: sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: true
+
   /xdg-basedir@5.1.0:
     resolution: {integrity: sha512-GCPAHLvrIH13+c0SuacwvRYj2SxJXQ4kaVTT5xgL3kPrz56XxkF21IGhjSE1+W0aw7gpBWRGXLCPnPby6lSpmQ==}
     engines: {node: '>=12'}
@@ -7537,3 +7587,9 @@ packages:
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: true
+
+  github.com/uNetworking/uWebSockets.js/f97da56fe535bb6d318c62ed31e0f44cef104f05:
+    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/f97da56fe535bb6d318c62ed31e0f44cef104f05}
+    name: uWebSockets.js
+    version: 20.40.0
+    dev: false

@@ -36,8 +36,13 @@
 	"lint-staged": {
 		"*": "prettier --ignore-unknown --write"
 	},
+	"dependencies": {
+		"@trpc/server": "11.0.0-next-beta.221",
+		"uWebSockets.js": "uNetworking/uWebSockets.js#v20.40.0"
+	},
 	"devDependencies": {
 		"@release-it/conventional-changelog": "^8.0.1",
+		"@trpc/client": "11.0.0-next-beta.221",
 		"@types/eslint": "^8.56.2",
 		"@typescript-eslint/eslint-plugin": "^6.19.0",
 		"@typescript-eslint/parser": "^6.19.0",
@@ -72,8 +77,10 @@
 		"should-semantic-release": "^0.2.1",
 		"tsup": "^8.0.1",
 		"typescript": "^5.3.3",
+		"unws": "^0.2.4",
 		"vitest": "^1.2.1",
-		"yaml-eslint-parser": "^1.2.2"
+		"yaml-eslint-parser": "^1.2.2",
+		"zod": "^3.22.4"
 	},
 	"packageManager": "pnpm@8.14.1",
 	"engines": {
