@@ -8,6 +8,7 @@
 	},
 	"license": "MIT",
 	"author": {
+		"name": "Christopher YOVANOVITCH",
 		"email": "yovano_c@outlook.com"
 	},
 	"type": "module",
