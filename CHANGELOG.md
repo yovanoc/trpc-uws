@@ -1,3 +1,9 @@
+# [0.2.0](https://github.com/yovanoc/trpc-uws/compare/0.1.0...0.2.0) (2024-01-21)
+
+### Features
+
+- trpc uws ([#1](https://github.com/yovanoc/trpc-uws/issues/1)) ([1afbded](https://github.com/yovanoc/trpc-uws/commit/1afbded7425fc308c652f00b1f0f8cb7f6eea254))
+
 # 0.1.0 (2024-01-20)
 
 ### Bug Fixes
