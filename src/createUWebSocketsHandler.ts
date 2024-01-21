@@ -7,7 +7,7 @@ import { WrappedHTTPRequest, uHTTPHandlerOptions } from "./types.js";
 import { extractAndWrapHttpRequest } from "./utils.js";
 
 /**
- * @param uWsApp uWebsockets server instance
+ * @param uWsApp uWebSockets server instance
  * @param prefix The path to trpc without trailing slash (ex: "/trpc")
  * @param opts handler options
  */
