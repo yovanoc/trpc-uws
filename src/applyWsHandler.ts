@@ -289,8 +289,8 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 		}
 	}
 
-	app.ws(prefix, {
-		close(client: WebSocket<Decoration<TRouter>>) {
+	app.ws<Decoration<TRouter>>(prefix, {
+		close(client) {
 			const data = client.getUserData();
 
 			for (const sub of data.clientSubscriptions.values()) {
@@ -307,7 +307,7 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 		maxLifetime: opts.maxLifetime,
 		maxPayloadLength: opts.maxPayloadLength,
 
-		async message(client: WebSocket<Decoration<TRouter>>, rawMsg) {
+		async message(client, rawMsg) {
 			try {
 				const stringMsg = Buffer.from(rawMsg).toString();
 
@@ -339,7 +339,7 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				});
 			}
 		},
-		async open(client: WebSocket<Decoration<TRouter>>) {
+		async open(client) {
 			async function createContextAsync() {
 				const data = client.getUserData();
 
@@ -411,14 +411,20 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				res,
 			};
 
-			res.upgrade(
-				data,
-				/* Spell these correctly */
-				secWebSocketKey,
-				secWebSocketProtocol,
-				secWebSocketExtensions,
-				context,
-			);
+			if (res.aborted) {
+				return;
+			}
+
+			res.cork(() => {
+				res.upgrade(
+					data,
+					/* Spell these correctly */
+					secWebSocketKey,
+					secWebSocketProtocol,
+					secWebSocketExtensions,
+					context,
+				);
+			});
 		},
 	});
 
