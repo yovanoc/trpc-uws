@@ -17,11 +17,6 @@ export function createUWebSocketsHandler<TRouter extends AnyRouter>(
 	opts: uHTTPHandlerOptions<TRouter, WrappedHTTPRequest, HttpResponse>,
 ) {
 	const handler = (res: HttpResponse, req: HttpRequest) => {
-		res.onAborted(() => {
-			// console.log('request was aborted');
-			res.aborted = true;
-		});
-
 		const wrappedReq = extractAndWrapHttpRequest(prefix, req);
 
 		uWsHTTPRequestHandler({

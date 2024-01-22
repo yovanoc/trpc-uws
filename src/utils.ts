@@ -3,12 +3,16 @@ import { HttpRequest, HttpResponse } from "uWebSockets.js";
 
 import { WrappedHTTPRequest } from "./types.js";
 
-export function getPostBody(
-	method: "GET" | "POST",
+export const getPostBody = <
+	// TRouter extends AnyRouter,
+	TRequest extends WrappedHTTPRequest,
+	// TResponse extends WrappedHTTPResponse
+>(
+	method: TRequest["method"],
 	res: HttpResponse,
 	maxBodySize?: number,
-) {
-	return new Promise<
+) =>
+	new Promise<
 		| { data: unknown; ok: true; preprocessed: boolean }
 		| { error: TRPCError; ok: false }
 	>((resolve) => {
@@ -44,6 +48,7 @@ export function getPostBody(
 			}
 
 			if (buffer) {
+				// else accumulate
 				buffer = Buffer.concat([buffer, chunk]);
 			} else {
 				buffer = Buffer.concat([chunk]);
@@ -59,13 +64,13 @@ export function getPostBody(
 		});
 
 		res.onAborted(() => {
+			res.aborted = true;
 			resolve({
 				error: new TRPCError({ code: "CLIENT_CLOSED_REQUEST" }),
 				ok: false,
 			});
 		});
 	});
-}
 
 export function extractAndWrapHttpRequest(
 	prefix: string,

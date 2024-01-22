@@ -40,10 +40,6 @@ export function uWsHTTPRequestHandler<
 
 		const { req, res } = opts;
 
-		if (res.aborted) {
-			return;
-		}
-
 		const bodyResult = await getPostBody(req.method, res, opts.maxBodySize);
 
 		if (res.aborted) {
