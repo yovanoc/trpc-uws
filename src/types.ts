@@ -31,13 +31,13 @@ export type uHTTPHandlerOptions<
 	TResponse extends WrappedHTTPResponse,
 > = HTTPBaseHandlerOptions<TRouter, TRequest> &
 	NodeHTTPCreateContextOption<TRouter, TRequest, TResponse> & {
-		enableSubscriptions?: boolean;
-		maxBodySize?: number;
+		cors?: { headers?: string[]; origin?: string | string[] } | boolean;
 		// experimental_contentTypeHandlers?: NodeHTTPContentTypeHandler<
 		//   TRequest,
 		//   TResponse
 		// >[];
-
+		enableSubscriptions?: boolean;
+		maxBodySize?: number;
 		middleware?: ConnectMiddleware;
 	};
 
