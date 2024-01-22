@@ -1,3 +1,9 @@
+# [0.3.0](https://github.com/yovanoc/trpc-uws/compare/0.2.1...0.3.0) (2024-01-22)
+
+### Features
+
+- cors ([8da0418](https://github.com/yovanoc/trpc-uws/commit/8da0418dc6bceb077a9ad03f7e2956e3fa924023))
+
 ## [0.2.1](https://github.com/yovanoc/trpc-uws/compare/0.2.0...0.2.1) (2024-01-22)
 
 ### Bug Fixes
