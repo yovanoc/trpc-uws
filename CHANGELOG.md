@@ -1,3 +1,9 @@
+## [0.2.1](https://github.com/yovanoc/trpc-uws/compare/0.2.0...0.2.1) (2024-01-22)
+
+### Bug Fixes
+
+- aborted ([cce8b37](https://github.com/yovanoc/trpc-uws/commit/cce8b37801f870dcba31ccec4648a6ece1ea1cfd))
+
 # [0.2.0](https://github.com/yovanoc/trpc-uws/compare/0.1.0...0.2.0) (2024-01-21)
 
 ### Features
