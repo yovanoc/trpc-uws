@@ -1,21 +1,28 @@
 import { TRPCError } from "@trpc/server";
 import { HttpRequest, HttpResponse } from "uWebSockets.js";
 
-import { WrappedHTTPRequest } from "./types.js";
+import type {
+	WrappedHTTPRequest,
+	WrappedHTTPResponse,
+	WrappedHttpResponseWS,
+} from "./types.js";
+
+import { getCorsHeaders } from "./cors.js";
+
+export type TrpcBody =
+	| { data: string | undefined; ok: true; preprocessed: boolean }
+	| { error: TRPCError; ok: false };
 
 export const getPostBody = <
 	// TRouter extends AnyRouter,
 	TRequest extends WrappedHTTPRequest,
-	// TResponse extends WrappedHTTPResponse
+	// TResponse extends WrappedHTTPResponse,
 >(
 	method: TRequest["method"],
 	res: HttpResponse,
 	maxBodySize?: number,
 ) =>
-	new Promise<
-		| { data: unknown; ok: true; preprocessed: boolean }
-		| { error: TRPCError; ok: false }
-	>((resolve) => {
+	new Promise<TrpcBody>((resolve) => {
 		if (method === "GET") {
 			// no body in get request
 			resolve({
@@ -91,4 +98,95 @@ export function extractAndWrapHttpRequest(
 		query,
 		url,
 	};
+}
+
+export function extractAndWrapHttpResponse(
+	method: WrappedHTTPRequest["method"],
+	res: HttpResponse,
+	maxBodySize?: number,
+): WrappedHTTPResponse {
+	const finalHeaders: Record<string, string> = {};
+	let finalStatus: string | undefined = undefined;
+
+	const ipProxied = Buffer.from(res.getProxiedRemoteAddressAsText()).toString();
+	const ip =
+		ipProxied !== ""
+			? ipProxied
+			: Buffer.from(res.getRemoteAddressAsText()).toString();
+
+	const wrappedRes: WrappedHTTPResponse = {
+		aborted: false,
+		body: getPostBody(method, res, maxBodySize),
+		end: (trpcRes, cors) => {
+			if (wrappedRes.aborted) {
+				return;
+			}
+
+			res.cork(() => {
+				// TODO final status
+				res.writeStatus(finalStatus ?? trpcRes.status.toString()); // is this okay?
+
+				// console.dir({
+				// 	"res.finalHeaders": res.finalHeaders,
+				// 	"res.finalStatus": res.finalStatus,
+				// 	"result.headers": result.headers,
+				// 	"result.status": result.status,
+				// });
+
+				const headers = {
+					...getCorsHeaders(cors),
+					...finalHeaders,
+					...trpcRes.headers,
+				};
+
+				// console.dir({ headers });
+
+				// old school way of writing headers
+				for (const [key, value] of Object.entries(headers)) {
+					if (typeof value === "undefined") {
+						continue;
+					}
+
+					if (Array.isArray(value)) {
+						for (const v of value) {
+							res.writeHeader(key, v);
+						}
+					} else {
+						res.writeHeader(key, value);
+					}
+				}
+
+				res.end(trpcRes.body);
+			});
+		},
+		ip,
+		writeHeader(key, value) {
+			finalHeaders[key] = value;
+		},
+		writeStatus(status) {
+			finalStatus = status;
+		},
+	};
+
+	return wrappedRes;
+}
+
+export function extractAndWrapHttpResponseWS(
+	headers: Record<string, string>,
+	res: HttpResponse,
+): WrappedHttpResponseWS {
+	const ipProxied = Buffer.from(res.getProxiedRemoteAddressAsText()).toString();
+	const ip =
+		ipProxied !== ""
+			? ipProxied
+			: Buffer.from(res.getRemoteAddressAsText()).toString();
+
+	const wrappedRes: WrappedHttpResponseWS = {
+		ip,
+		writeHeader(key, value) {
+			headers[key] = value;
+		},
+	};
+
+	return wrappedRes;
 }

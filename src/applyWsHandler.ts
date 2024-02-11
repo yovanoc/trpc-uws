@@ -1,9 +1,4 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import type { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
 import type { BaseHandlerOptions } from "@trpc/server/http";
-import type { CompressOptions, TemplatedApp, WebSocket } from "uWebSockets.js";
 
 import {
 	AnyRouter,
@@ -13,6 +8,7 @@ import {
 	inferRouterContext,
 	transformTRPCResponse,
 } from "@trpc/server";
+import { type NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
 import { Unsubscribable, isObservable } from "@trpc/server/observable";
 import {
 	JSONRPC2,
@@ -22,18 +18,29 @@ import {
 	parseTRPCMessage,
 } from "@trpc/server/rpc";
 import { getErrorShape } from "@trpc/server/shared";
+import { getCauseFromUnknown } from "@trpc/server/unstable-core-do-not-import";
+import {
+	type CompressOptions,
+	type HttpResponse,
+	SHARED_COMPRESSOR,
+	TemplatedApp,
+	WebSocket,
+} from "uWebSockets.js";
 
 import {
 	type MaybePromise,
 	WrappedHTTPRequest,
-	type WrappedHTTPResponse,
+	type WrappedHttpResponseWS,
 } from "./types.js";
-import { extractAndWrapHttpRequest } from "./utils.js";
+import {
+	extractAndWrapHttpRequest,
+	extractAndWrapHttpResponseWS,
+} from "./utils.js";
 
 interface UWSBuiltInOpts {
 	/** Whether or not we should automatically close the socket when a message is dropped due to backpressure. Defaults to false. */
 	closeOnBackpressureLimit?: number;
-	/** What per message-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
+	/** What permessage-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
 	compression?: CompressOptions;
 	/**
 	 * Maximum amount of seconds that may pass without sending or getting a message. Connection is closed if this timeout passes. Resolution (granularity) for timeouts are typically 4 seconds, rounded to closest.
@@ -53,7 +60,7 @@ interface UWSBuiltInOpts {
 /**
  */
 export type CreateWSSContextFnOptions = Omit<
-	NodeHTTPCreateContextFnOptions<WrappedHTTPRequest, WrappedHTTPResponse>,
+	NodeHTTPCreateContextFnOptions<WrappedHTTPRequest, WrappedHttpResponseWS>,
 	"info"
 >;
 
@@ -81,44 +88,60 @@ export type WSSHandlerOptions<TRouter extends AnyRouter> = BaseHandlerOptions<
 		process?: NodeJS.Process;
 	} & UWSBuiltInOpts;
 
-interface Decoration<TRouter extends AnyRouter> {
-	clientSubscriptions: Map<number | string, Unsubscribable>;
+interface UserData<TRouter extends AnyRouter> {
 	ctx: inferRouterContext<TRouter> | undefined;
-	ctxPromise: MaybePromise<inferRouterContext<TRouter>> | undefined;
+	id: string;
 	req: WrappedHTTPRequest;
-	res: WrappedHTTPResponse;
 }
 
-export function applyWSHandler<TRouter extends AnyRouter>(
+export const applyWSHandler = <TRouter extends AnyRouter>(
 	prefix: string,
 	opts: WSSHandlerOptions<TRouter>,
-) {
+) => {
 	const { app, createContext, router } = opts;
 
 	const { transformer } = router._def._config;
 
-	// instead of putting data on the client, can put it here in a global map
-	// const globals = new Map<WebSocket<any>, Decoration>();
+	const randomKey = Math.random().toString(36).slice(2);
 
-	// doing above can eliminate allClients for reconnection notification
-	const allClients = new Set<WebSocket<Decoration<TRouter>>>();
+	const broadcastKey = `${randomKey}-broadcastReconnectNotification`;
 
-	function respond(
-		client: WebSocket<Decoration<TRouter>>,
+	const allClientsSubscriptions = new Map<
+		string,
+		Map<number | string, Unsubscribable>
+	>();
+
+	const respond = (
+		client: WebSocket<UserData<TRouter>>,
 		untransformedJSON: TRPCResponseMessage,
-	) {
+	) => {
 		client.send(
 			JSON.stringify(
 				transformTRPCResponse(router._def._config, untransformedJSON),
 			),
 		);
-	}
+	};
 
-	function stopSubscription(
-		client: WebSocket<Decoration<TRouter>>,
+	const closeUpgrade = (
+		res: HttpResponse,
+		untransformedJSON: TRPCResponseMessage,
+	) => {
+		res.cork(() => {
+			res
+				.writeStatus("403")
+				.end(
+					JSON.stringify(
+						transformTRPCResponse(router._def._config, untransformedJSON),
+					),
+				);
+		});
+	};
+
+	const stopSubscription = (
+		client: WebSocket<UserData<TRouter>>,
 		subscription: Unsubscribable,
 		{ id, jsonrpc }: JSONRPC2.BaseEnvelope & { id: JSONRPC2.RequestId },
-	) {
+	) => {
 		subscription.unsubscribe();
 
 		respond(client, {
@@ -128,17 +151,21 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				type: "stopped",
 			},
 		});
-	}
+	};
 
-	async function handleRequest(
-		client: WebSocket<Decoration<TRouter>>,
+	const handleRequest = async (
+		client: WebSocket<UserData<TRouter>>,
 		msg: TRPCClientOutgoingMessage,
-	) {
-		const data = client.getUserData();
-		const clientSubscriptions = data.clientSubscriptions;
+	) => {
+		const wsData = client.getUserData();
+		let clientsSubscriptions = allClientsSubscriptions.get(wsData.id);
+		if (!clientsSubscriptions) {
+			clientsSubscriptions = new Map();
+			allClientsSubscriptions.set(wsData.id, clientsSubscriptions);
+		}
 
 		const { id, jsonrpc } = msg;
-		/* istanbul ignore next -- @preserve */
+
 		if (id === null) {
 			throw new TRPCError({
 				code: "BAD_REQUEST",
@@ -147,23 +174,22 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 		}
 
 		if (msg.method === "subscription.stop") {
-			const sub = clientSubscriptions.get(id);
+			const sub = clientsSubscriptions.get(id);
 			if (sub) {
 				stopSubscription(client, sub, { id, jsonrpc });
 			}
 
-			clientSubscriptions.delete(id);
+			clientsSubscriptions.delete(id);
+
 			return;
 		}
 
 		const { input, path } = msg.params;
+
 		const type = msg.method;
 		try {
-			await data.ctxPromise; // asserts context has been set
-
 			const result = await callProcedure({
-				ctx: data.ctx,
-				// eslint-disable-next-line @typescript-eslint/require-await
+				ctx: wsData.ctx,
 				getRawInput: async () => input,
 				path,
 				procedures: router._def.procedures,
@@ -204,17 +230,17 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				error(err) {
 					const error = getTRPCErrorFromUnknown(err);
 					opts.onError?.({
-						ctx: data.ctx,
+						ctx: wsData.ctx,
 						error,
 						input,
 						path,
-						req: data.req,
+						req: wsData.req,
 						type,
 					});
 					respond(client, {
 						error: getErrorShape({
 							config: router._def._config,
-							ctx: data.ctx,
+							ctx: wsData.ctx,
 							error,
 							input,
 							path,
@@ -235,17 +261,15 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 					});
 				},
 			});
-			/* istanbul ignore next -- @preserve */
-			// FIXME handle these edge cases
-			//   if (client.readyState !== client.OPEN) {
-			//     // if the client got disconnected whilst initializing the subscription
-			//     // no need to send stopped message if the client is disconnected
-			//     sub.unsubscribe();
-			//     return;
-			//   }
 
-			/* istanbul ignore next -- @preserve */
-			if (clientSubscriptions.has(id)) {
+			// if (client.readyState !== client.OPEN) {
+			//   // if the client got disconnected whilst initializing the subscription
+			//   // no need to send stopped message if the client is disconnected
+			//   sub.unsubscribe();
+			//   return;
+			// }
+
+			if (clientsSubscriptions.has(id)) {
 				// duplicate request ids for client
 				stopSubscription(client, sub, { id, jsonrpc });
 				throw new TRPCError({
@@ -254,7 +278,7 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				});
 			}
 
-			clientSubscriptions.set(id, sub);
+			clientsSubscriptions.set(id, sub);
 
 			respond(client, {
 				id,
@@ -263,21 +287,21 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 					type: "started",
 				},
 			});
-		} catch (cause) /* istanbul ignore next -- @preserve */ {
+		} catch (cause) {
 			// procedure threw an error
 			const error = getTRPCErrorFromUnknown(cause);
 			opts.onError?.({
-				ctx: data.ctx,
+				ctx: wsData.ctx,
 				error,
 				input,
 				path,
-				req: data.req,
+				req: wsData.req,
 				type,
 			});
 			respond(client, {
 				error: getErrorShape({
 					config: router._def._config,
-					ctx: data.ctx,
+					ctx: wsData.ctx,
 					error,
 					input,
 					path,
@@ -287,42 +311,39 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				jsonrpc,
 			});
 		}
-	}
+	};
 
-	app.ws<Decoration<TRouter>>(prefix, {
-		close(client) {
-			const data = client.getUserData();
+	app.ws<UserData<TRouter>>(prefix, {
+		compression: SHARED_COMPRESSOR,
+		// maxPayloadLength: 5 * 1024 * 1024,
+		// maxBackpressure,
+		// idleTimeout: ms.minutes(5) / 1000,
+		close: (ws) => {
+			const id = ws.getUserData().id;
+			const clientSubs = allClientsSubscriptions.get(id);
+			if (!clientSubs) {
+				return;
+			}
 
-			for (const sub of data.clientSubscriptions.values()) {
+			for (const sub of clientSubs.values()) {
 				sub.unsubscribe();
 			}
 
-			data.clientSubscriptions.clear();
-			allClients.delete(client);
+			clientSubs.clear();
+			allClientsSubscriptions.delete(id);
 		},
-		closeOnBackpressureLimit: opts.closeOnBackpressureLimit,
-		compression: opts.compression,
-		idleTimeout: opts.idleTimeout,
-		maxBackpressure: opts.maxBackpressure,
-		maxLifetime: opts.maxLifetime,
-		maxPayloadLength: opts.maxPayloadLength,
-
-		async message(client, rawMsg) {
+		message: async (client, message) => {
 			try {
-				const stringMsg = Buffer.from(rawMsg).toString();
-
-				const msgJSON: unknown = JSON.parse(stringMsg);
-
+				const received = Buffer.from(message.slice(0)).toString();
+				const msgJSON: unknown = JSON.parse(received);
 				const msgs: unknown[] = Array.isArray(msgJSON) ? msgJSON : [msgJSON];
 				const promises = msgs
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 					.map((raw) => parseTRPCMessage(raw, transformer))
-					.map((value) => handleRequest(client, value));
-
+					.map((msg) => handleRequest(client, msg));
 				await Promise.all(promises);
 			} catch (cause) {
 				const error = new TRPCError({
-					cause,
+					cause: getCauseFromUnknown(cause),
 					code: "PARSE_ERROR",
 				});
 
@@ -339,86 +360,82 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				});
 			}
 		},
-		async open(client) {
-			async function createContextAsync() {
-				const data = client.getUserData();
-
-				try {
-					data.ctx = await data.ctxPromise;
-				} catch (cause) {
-					const error = getTRPCErrorFromUnknown(cause);
-
-					opts.onError?.({
-						ctx: data.ctx,
-						error,
-						input: undefined,
-						path: undefined,
-						req: data.req,
-						type: "unknown",
-					});
-					respond(client, {
-						error: getErrorShape({
-							config: router._def._config,
-							ctx: data.ctx,
-							error,
-							input: undefined,
-							path: undefined,
-							type: "unknown",
-						}),
-						id: null,
-					});
-
-					// large timeout is needed in order for response above to reach the client
-					// otherwise it tries to reconnect over and over again, even though the context throws
-					// this is a rough edge of uWs
-					setTimeout(() => {
-						if (client.getUserData().res.aborted) {
-							return;
-						}
-
-						client.end();
-					}, 1000);
-
-					// original code
-					// (global.setImmediate ?? global.setTimeout)(() => {
-					// client.end()
-					// });
-				}
-			}
-
-			await createContextAsync();
-			allClients.add(client);
+		open: (client) => {
+			client.subscribe(broadcastKey);
 		},
-
-		sendPingsAutomatically: opts.sendPingsAutomatically, // could this be enabled?
-
-		upgrade: (res, req, context) => {
+		upgrade: async (res, req, context) => {
 			res.onAborted(() => {
-				res.aborted = true;
+				upgradeAborted.aborted = true;
 			});
+
+			const upgradeAborted = { aborted: false };
+
 			const wrappedReq = extractAndWrapHttpRequest(prefix, req);
+			const headers: Record<string, string> = {};
+			const wrappedRes = extractAndWrapHttpResponseWS(headers, res);
 
 			const secWebSocketKey = wrappedReq.headers["sec-websocket-key"];
 			const secWebSocketProtocol = wrappedReq.headers["sec-websocket-protocol"];
 			const secWebSocketExtensions =
 				wrappedReq.headers["sec-websocket-extensions"];
 
-			const data: Decoration<TRouter> = {
-				clientSubscriptions: new Map<number | string, Unsubscribable>(),
+			const data: UserData<TRouter> = {
 				ctx: undefined,
-				ctxPromise: createContext?.({ req: wrappedReq, res }), // this cannot use RES!
+				id: Math.random().toString(36).slice(2),
 				req: wrappedReq,
-				res,
 			};
 
-			if (res.aborted) {
+			try {
+				data.ctx = await createContext?.({
+					req: wrappedReq,
+					res: wrappedRes,
+				});
+			} catch (cause) {
+				const error = getTRPCErrorFromUnknown(cause);
+				opts.onError?.({
+					ctx: data.ctx,
+					error,
+					input: undefined,
+					path: undefined,
+					req: wrappedReq,
+					type: "unknown",
+				});
+
+				if (upgradeAborted.aborted) {
+					/* You must not upgrade now */
+					return;
+				}
+
+				closeUpgrade(res, {
+					error: getErrorShape({
+						config: router._def._config,
+						ctx: data.ctx,
+						error,
+						input: undefined,
+						path: undefined,
+						type: "unknown",
+					}),
+					id: null,
+				});
 				return;
 			}
 
+			if (upgradeAborted.aborted) {
+				/* You must not upgrade now */
+				return;
+			}
+
+			/* Cork any async response including upgrade */
 			res.cork(() => {
+				res.writeStatus("101 Switching Protocols");
+				for (const [key, value] of Object.entries(headers)) {
+					res.writeHeader(key, value);
+				}
+
+				/* This immediately calls open handler, you must not use res after this call */
 				res.upgrade(
 					data,
-					/* Spell these correctly */
+					/* Use our copies here */
 					secWebSocketKey,
 					secWebSocketProtocol,
 					secWebSocketExtensions,
@@ -435,9 +452,12 @@ export function applyWSHandler<TRouter extends AnyRouter>(
 				method: "reconnect",
 			};
 			const data = JSON.stringify(response);
-			for (const client of allClients) {
-				client.send(data);
-			}
+			app.publish(broadcastKey, data);
+			// for (const client of wss.clients) {
+			//   if (client.readyState === 1 /* ws.OPEN */) {
+			//     client.send(data);
+			//   }
+			// }
 		},
 	};
-}
+};
