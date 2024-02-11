@@ -18,7 +18,10 @@ import {
 	parseTRPCMessage,
 } from "@trpc/server/rpc";
 import { getErrorShape } from "@trpc/server/shared";
-import { getCauseFromUnknown } from "@trpc/server/unstable-core-do-not-import";
+import {
+	type RouterRecord,
+	getCauseFromUnknown,
+} from "@trpc/server/unstable-core-do-not-import";
 import {
 	type CompressOptions,
 	type HttpResponse,
@@ -40,7 +43,7 @@ import {
 interface UWSBuiltInOpts {
 	/** Whether or not we should automatically close the socket when a message is dropped due to backpressure. Defaults to false. */
 	closeOnBackpressureLimit?: number;
-	/** What permessage-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
+	/** What per message-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
 	compression?: CompressOptions;
 	/**
 	 * Maximum amount of seconds that may pass without sending or getting a message. Connection is closed if this timeout passes. Resolution (granularity) for timeouts are typically 4 seconds, rounded to closest.
@@ -117,6 +120,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 	) => {
 		client.send(
 			JSON.stringify(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				transformTRPCResponse(router._def._config, untransformedJSON),
 			),
 		);
@@ -127,13 +131,12 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 		untransformedJSON: TRPCResponseMessage,
 	) => {
 		res.cork(() => {
-			res
-				.writeStatus("403")
-				.end(
-					JSON.stringify(
-						transformTRPCResponse(router._def._config, untransformedJSON),
-					),
-				);
+			res.writeStatus("403").end(
+				JSON.stringify(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					transformTRPCResponse(router._def._config, untransformedJSON),
+				),
+			);
 		});
 	};
 
@@ -190,9 +193,10 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 		try {
 			const result = await callProcedure({
 				ctx: wsData.ctx,
+				// eslint-disable-next-line @typescript-eslint/require-await
 				getRawInput: async () => input,
 				path,
-				procedures: router._def.procedures,
+				procedures: router._def.procedures as RouterRecord,
 				type,
 			});
 
@@ -238,6 +242,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 						type,
 					});
 					respond(client, {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						error: getErrorShape({
 							config: router._def._config,
 							ctx: wsData.ctx,
@@ -299,6 +304,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 				type,
 			});
 			respond(client, {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				error: getErrorShape({
 					config: router._def._config,
 					ctx: wsData.ctx,
@@ -348,6 +354,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 				});
 
 				respond(client, {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					error: getErrorShape({
 						config: router._def._config,
 						ctx: undefined,
@@ -407,6 +414,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 				}
 
 				closeUpgrade(res, {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					error: getErrorShape({
 						config: router._def._config,
 						ctx: data.ctx,
