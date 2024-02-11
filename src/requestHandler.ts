@@ -38,7 +38,7 @@ export function uWsHTTPRequestHandler<
 
 		const bodyResult = await opts.res.body;
 
-		if (opts.res.aborted) {
+		if (opts.res.aborted()) {
 			return;
 		}
 

@@ -117,10 +117,10 @@ export function extractAndWrapHttpResponse(
 			: Buffer.from(res.getRemoteAddressAsText()).toString();
 
 	const wrappedRes: WrappedHTTPResponse = {
-		aborted: aborted.value,
+		aborted: () => aborted.value,
 		body: getPostBody(method, res, aborted, maxBodySize),
 		end: (trpcRes, cors) => {
-			if (wrappedRes.aborted) {
+			if (wrappedRes.aborted()) {
 				return;
 			}
 

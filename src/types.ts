@@ -25,7 +25,7 @@ export interface WrappedHTTPRequest {
 }
 
 export interface WrappedHTTPResponse {
-	aborted: boolean;
+	aborted: () => boolean;
 	body: Promise<TrpcBody>;
 	end: (res: HTTPResponse, cors?: Cors) => void;
 	ip: string;
