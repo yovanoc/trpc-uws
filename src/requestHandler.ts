@@ -6,11 +6,10 @@ import {
 } from "@trpc/server/http";
 
 import {
-	WrappedHTTPRequest,
-	WrappedHTTPResponse,
+	type WrappedHTTPRequest,
+	type WrappedHTTPResponse,
 	uHTTPRequestHandlerOptions,
 } from "./types.js";
-import { getPostBody } from "./utils.js";
 
 export function uWsHTTPRequestHandler<
 	TRouter extends AnyRouter,
@@ -28,9 +27,8 @@ export function uWsHTTPRequestHandler<
 			innerOpts,
 		) => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return opts.createContext?.({
-				req: opts.req,
-				res: opts.res,
+			return await opts.createContext?.({
+				...opts,
 				...innerOpts,
 			});
 		};
@@ -38,11 +36,9 @@ export function uWsHTTPRequestHandler<
 		// this may not be needed
 		const query = new URLSearchParams(opts.req.query);
 
-		const { req, res } = opts;
+		const bodyResult = await opts.res.body;
 
-		const bodyResult = await getPostBody(req.method, res, opts.maxBodySize);
-
-		if (res.aborted) {
+		if (opts.res.aborted) {
 			return;
 		}
 
@@ -70,29 +66,6 @@ export function uWsHTTPRequestHandler<
 			router: opts.router,
 		});
 
-		if (res.aborted) {
-			return;
-		}
-
-		res.cork(() => {
-			res.writeStatus(result.status.toString()); // is this okay?
-
-			// old school way of writing headers
-			for (const [key, value] of Object.entries(result.headers ?? {})) {
-				if (typeof value === "undefined") {
-					continue;
-				}
-
-				if (Array.isArray(value)) {
-					for (const v of value) {
-						res.writeHeader(key, v);
-					}
-				} else {
-					res.writeHeader(key, value);
-				}
-			}
-
-			res.end(result.body);
-		});
+		opts.res.end(result, opts.cors);
 	});
 }

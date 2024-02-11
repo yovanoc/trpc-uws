@@ -3,8 +3,9 @@ import type {
 	NodeHTTPCreateContextFnOptions,
 	NodeHTTPCreateContextOption,
 } from "@trpc/server/adapters/node-http";
-import type { HTTPBaseHandlerOptions } from "@trpc/server/http";
-import type { HttpResponse } from "uWebSockets.js";
+import type { HTTPBaseHandlerOptions, HTTPResponse } from "@trpc/server/http";
+
+import type { TrpcBody } from "./utils.js";
 
 export type MaybePromise<T> = Promise<T> | T;
 
@@ -23,7 +24,21 @@ export interface WrappedHTTPRequest {
 	url: string;
 }
 
-export type WrappedHTTPResponse = HttpResponse;
+export interface WrappedHTTPResponse {
+	aborted: boolean;
+	body: Promise<TrpcBody>;
+	end: (res: HTTPResponse, cors?: Cors) => void;
+	ip: string;
+	writeHeader: (key: string, value: string) => void;
+	writeStatus: (status: string) => void;
+}
+
+export interface WrappedHttpResponseWS {
+	ip: string;
+	writeHeader: (key: string, value: string) => void;
+}
+
+export type Cors = { headers?: string[]; origin?: string | string[] } | boolean;
 
 export type uHTTPHandlerOptions<
 	TRouter extends AnyRouter,
@@ -31,7 +46,7 @@ export type uHTTPHandlerOptions<
 	TResponse extends WrappedHTTPResponse,
 > = HTTPBaseHandlerOptions<TRouter, TRequest> &
 	NodeHTTPCreateContextOption<TRouter, TRequest, TResponse> & {
-		cors?: { headers?: string[]; origin?: string | string[] } | boolean;
+		cors?: Cors;
 		// experimental_contentTypeHandlers?: NodeHTTPContentTypeHandler<
 		//   TRequest,
 		//   TResponse
