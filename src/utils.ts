@@ -20,6 +20,7 @@ export const getPostBody = <
 >(
 	method: TRequest["method"],
 	res: HttpResponse,
+	aborted: { value: boolean },
 	maxBodySize?: number,
 ) =>
 	new Promise<TrpcBody>((resolve) => {
@@ -71,7 +72,7 @@ export const getPostBody = <
 		});
 
 		res.onAborted(() => {
-			res.aborted = true;
+			aborted.value = true;
 			resolve({
 				error: new TRPCError({ code: "CLIENT_CLOSED_REQUEST" }),
 				ok: false,
@@ -107,6 +108,7 @@ export function extractAndWrapHttpResponse(
 ): WrappedHTTPResponse {
 	const finalHeaders: Record<string, string> = {};
 	let finalStatus: string | undefined = undefined;
+	const aborted = { value: false };
 
 	const ipProxied = Buffer.from(res.getProxiedRemoteAddressAsText()).toString();
 	const ip =
@@ -115,8 +117,8 @@ export function extractAndWrapHttpResponse(
 			: Buffer.from(res.getRemoteAddressAsText()).toString();
 
 	const wrappedRes: WrappedHTTPResponse = {
-		aborted: false,
-		body: getPostBody(method, res, maxBodySize),
+		aborted: aborted.value,
+		body: getPostBody(method, res, aborted, maxBodySize),
 		end: (trpcRes, cors) => {
 			if (wrappedRes.aborted) {
 				return;
