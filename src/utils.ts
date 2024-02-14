@@ -102,7 +102,7 @@ export function extractAndWrapHttpRequest(
 }
 
 export function extractAndWrapHttpResponse(
-	method: WrappedHTTPRequest["method"],
+	req: WrappedHTTPRequest,
 	res: HttpResponse,
 	maxBodySize?: number,
 ): WrappedHTTPResponse {
@@ -118,7 +118,7 @@ export function extractAndWrapHttpResponse(
 
 	const wrappedRes: WrappedHTTPResponse = {
 		aborted: () => aborted.value,
-		body: getPostBody(method, res, aborted, maxBodySize),
+		body: getPostBody(req.method, res, aborted, maxBodySize),
 		end: (trpcRes, cors) => {
 			if (wrappedRes.aborted()) {
 				return;
@@ -136,7 +136,10 @@ export function extractAndWrapHttpResponse(
 				// });
 
 				const headers = {
-					...getCorsHeaders(cors),
+					...getCorsHeaders({
+						cors,
+						req,
+					}),
 					...finalHeaders,
 					...trpcRes.headers,
 				};

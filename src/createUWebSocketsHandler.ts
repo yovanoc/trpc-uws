@@ -27,7 +27,7 @@ export function createUWebSocketsHandler<TRouter extends AnyRouter>(
 	const handler = (res: HttpResponse, req: HttpRequest) => {
 		const wrappedReq = extractAndWrapHttpRequest(prefix, req);
 		const wrappedRes = extractAndWrapHttpResponse(
-			wrappedReq.method,
+			wrappedReq,
 			res,
 			opts.maxBodySize,
 		);
@@ -41,8 +41,11 @@ export function createUWebSocketsHandler<TRouter extends AnyRouter>(
 	};
 
 	if (opts.cors) {
-		uWsApp.options(`${prefix}/*`, (res) => {
-			const headers = getCorsHeaders(opts.cors);
+		uWsApp.options(`${prefix}/*`, (res, req) => {
+			const headers = getCorsHeaders({
+				cors: opts.cors,
+				req: extractAndWrapHttpRequest(prefix, req),
+			});
 			res.cork(() => {
 				for (const [key, value] of Object.entries(headers)) {
 					res.writeHeader(key, value);
