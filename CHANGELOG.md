@@ -1,3 +1,9 @@
+## [0.6.2](https://github.com/yovanoc/trpc-uws/compare/0.6.1...0.6.2) (2024-02-14)
+
+### Bug Fixes
+
+- safari cors ([ec0c9ca](https://github.com/yovanoc/trpc-uws/commit/ec0c9caf3c43afc25c0856c75e9e7708d5f663d3))
+
 ## [0.6.1](https://github.com/yovanoc/trpc-uws/compare/0.6.0...0.6.1) (2024-02-11)
 
 ### Bug Fixes
