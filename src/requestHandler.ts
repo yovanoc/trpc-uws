@@ -66,6 +66,6 @@ export function uWsHTTPRequestHandler<
 			router: opts.router,
 		});
 
-		opts.res.end(result, opts.cors);
+		void opts.res.end(result, opts.cors);
 	});
 }

@@ -7,7 +7,7 @@ import type {
 	WrappedHttpResponseWS,
 } from "./types.js";
 
-import { getCorsHeaders } from "./cors.js";
+import { cors as corsFn } from "./cors.js";
 
 export type TrpcBody =
 	| { data: string | undefined; ok: true; preprocessed: boolean }
@@ -119,7 +119,13 @@ export function extractAndWrapHttpResponse(
 	const wrappedRes: WrappedHTTPResponse = {
 		aborted: () => aborted.value,
 		body: getPostBody(req.method, res, aborted, maxBodySize),
-		end: (trpcRes, cors) => {
+		end: async (trpcRes, cors) => {
+			if (wrappedRes.aborted()) {
+				return;
+			}
+
+			const corsHeaders = await corsFn(req, cors);
+
 			if (wrappedRes.aborted()) {
 				return;
 			}
@@ -136,13 +142,13 @@ export function extractAndWrapHttpResponse(
 				// });
 
 				const headers = {
-					...getCorsHeaders({
-						cors,
-						req,
-					}),
 					...finalHeaders,
 					...trpcRes.headers,
 				};
+
+				for (const [key, value] of corsHeaders.entries()) {
+					headers[key] = value;
+				}
 
 				// console.dir({ headers });
 
