@@ -1,3 +1,13 @@
+# [0.7.0](https://github.com/yovanoc/trpc-uws/compare/0.6.2...0.7.0) (2024-02-15)
+
+### Bug Fixes
+
+- lock ([dcf45a3](https://github.com/yovanoc/trpc-uws/commit/dcf45a33f6fa79826f91b56c88e849661b513b9d))
+
+### Features
+
+- better cors ([7b55691](https://github.com/yovanoc/trpc-uws/commit/7b556916f9310d9f184152311e34ebb068564e98))
+
 ## [0.6.2](https://github.com/yovanoc/trpc-uws/compare/0.6.1...0.6.2) (2024-02-14)
 
 ### Bug Fixes
