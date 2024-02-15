@@ -97,7 +97,9 @@ async function startServer() {
 
 	const router = makeRouter();
 	createUWebSocketsHandler(app, "/trpc", {
-		cors: true,
+		cors: {
+			origin: "*",
+		},
 		createContext: ({ req, res }) => {
 			const getUser = () => {
 				if (req.headers.authorization === "meow") {

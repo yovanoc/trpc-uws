@@ -2,7 +2,7 @@ import { AnyRouter } from "@trpc/server";
 import { HttpRequest, HttpResponse, TemplatedApp } from "uWebSockets.js";
 
 import { WSSHandlerOptions, applyWSHandler } from "./applyWsHandler.js";
-import { getCorsHeaders } from "./cors.js";
+import { cors } from "./cors.js";
 import { uWsHTTPRequestHandler } from "./requestHandler.js";
 import {
 	type WrappedHTTPRequest,
@@ -41,15 +41,15 @@ export function createUWebSocketsHandler<TRouter extends AnyRouter>(
 	};
 
 	if (opts.cors) {
-		uWsApp.options(`${prefix}/*`, (res, req) => {
-			const headers = getCorsHeaders({
-				cors: opts.cors,
-				req: extractAndWrapHttpRequest(prefix, req),
-			});
+		uWsApp.options(`${prefix}/*`, async (res, req) => {
+			const headers = await cors(
+				extractAndWrapHttpRequest(prefix, req),
+				opts.cors,
+			);
 			res.cork(() => {
-				for (const [key, value] of Object.entries(headers)) {
-					res.writeHeader(key, value);
-				}
+				headers.forEach((v, k) => {
+					res.writeHeader(k, v);
+				});
 
 				res.endWithoutBody();
 			});

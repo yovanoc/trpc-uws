@@ -5,6 +5,7 @@ import type {
 } from "@trpc/server/adapters/node-http";
 import type { HTTPBaseHandlerOptions, HTTPResponse } from "@trpc/server/http";
 
+import type { CorsOptions } from "./cors.js";
 import type { TrpcBody } from "./utils.js";
 
 export type MaybePromise<T> = Promise<T> | T;
@@ -19,7 +20,7 @@ type ConnectMiddleware<
 
 export interface WrappedHTTPRequest {
 	headers: Record<string, string>;
-	method: "GET" | "POST";
+	method: "DELETE" | "GET" | "OPTIONS" | "PATCH" | "POST" | "PUT";
 	query: URLSearchParams;
 	url: string;
 }
@@ -27,7 +28,7 @@ export interface WrappedHTTPRequest {
 export interface WrappedHTTPResponse {
 	aborted: () => boolean;
 	body: Promise<TrpcBody>;
-	end: (res: HTTPResponse, cors?: Cors) => void;
+	end: (res: HTTPResponse, cors?: CorsOptions) => Promise<void>;
 	ip: string;
 	writeHeader: (key: string, value: string) => void;
 	writeStatus: (status: string) => void;
@@ -38,15 +39,13 @@ export interface WrappedHttpResponseWS {
 	writeHeader: (key: string, value: string) => void;
 }
 
-export type Cors = { headers?: string[]; origin?: string | string[] } | boolean;
-
 export type uHTTPHandlerOptions<
 	TRouter extends AnyRouter,
 	TRequest extends WrappedHTTPRequest,
 	TResponse extends WrappedHTTPResponse,
 > = HTTPBaseHandlerOptions<TRouter, TRequest> &
 	NodeHTTPCreateContextOption<TRouter, TRequest, TResponse> & {
-		cors?: Cors;
+		cors?: CorsOptions;
 		// experimental_contentTypeHandlers?: NodeHTTPContentTypeHandler<
 		//   TRequest,
 		//   TResponse
