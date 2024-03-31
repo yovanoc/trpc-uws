@@ -19,8 +19,11 @@ export function uWsHTTPRequestHandler<
 	const handleViaMiddleware = opts.middleware ?? ((_req, _res, next) => next());
 	handleViaMiddleware(opts.req, opts.res, async (err) => {
 		if (err) {
-			// eslint-disable-next-line @typescript-eslint/no-throw-literal
-			throw err;
+			if (err instanceof Error) {
+				throw err;
+			} else {
+				throw new Error(String(err));
+			}
 		}
 
 		const createContext: ResolveHTTPRequestOptionsContextFn<TRouter> = async (

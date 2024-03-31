@@ -1,43 +1,39 @@
 {
-  "badgeTemplate": "\t<a href=\"#contributors\" target=\"_blank\"><img alt=\"👪 All Contributors: <%= contributors.length %>\" src=\"https://img.shields.io/badge/%F0%9F%91%AA_all_contributors-<%= contributors.length %>-21bb42.svg\" /></a>",
-  "commit": false,
-  "commitConvention": "angular",
-  "commitType": "docs",
-  "contributors": [
-    {
-      "login": "yovanoc",
-      "name": "Christopher Yovanovitch",
-      "avatar_url": "https://avatars.githubusercontent.com/u/7302317?v=4",
-      "profile": "https://devchris.me/",
-      "contributions": [
-        "code",
-        "content",
-        "doc",
-        "ideas",
-        "infra",
-        "maintenance",
-        "projectManagement",
-        "tool"
-      ]
-    },
-    {
-      "login": "JoshuaKGoldberg",
-      "name": "Josh Goldberg ✨",
-      "avatar_url": "https://avatars.githubusercontent.com/u/3335181?v=4",
-      "profile": "http://www.joshuakgoldberg.com/",
-      "contributions": [
-        "tool"
-      ]
-    }
-  ],
-  "contributorsPerLine": 7,
-  "contributorsSortAlphabetically": true,
-  "files": [
-    "README.md"
-  ],
-  "imageSize": 100,
-  "projectName": "trpc-uws",
-  "projectOwner": "yovanoc",
-  "repoHost": "https://github.com",
-  "repoType": "github"
+	"badgeTemplate": "\t<a href=\"#contributors\" target=\"_blank\"><img alt=\"👪 All Contributors: <%= contributors.length %>\" src=\"https://img.shields.io/badge/%F0%9F%91%AA_all_contributors-<%= contributors.length %>-21bb42.svg\" /></a>",
+	"commit": false,
+	"commitConvention": "angular",
+	"commitType": "docs",
+	"contributors": [
+		{
+			"login": "yovanoc",
+			"name": "Christopher Yovanovitch",
+			"avatar_url": "https://avatars.githubusercontent.com/u/7302317?v=4",
+			"profile": "https://devchris.me/",
+			"contributions": [
+				"code",
+				"content",
+				"doc",
+				"ideas",
+				"infra",
+				"maintenance",
+				"projectManagement",
+				"tool"
+			]
+		},
+		{
+			"login": "JoshuaKGoldberg",
+			"name": "Josh Goldberg ✨",
+			"avatar_url": "https://avatars.githubusercontent.com/u/3335181?v=4",
+			"profile": "http://www.joshuakgoldberg.com/",
+			"contributions": ["tool"]
+		}
+	],
+	"contributorsPerLine": 7,
+	"contributorsSortAlphabetically": true,
+	"files": ["README.md"],
+	"imageSize": 100,
+	"projectName": "trpc-uws",
+	"projectOwner": "yovanoc",
+	"repoHost": "https://github.com",
+	"repoType": "github"
 }
