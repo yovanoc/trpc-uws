@@ -24,7 +24,7 @@ npm i trpc-uws
 ```ts
 import { greet } from "trpc-uws";
 
-greet("Hello, world! 💖");
+greet("Hello, world! 💖.");
 ```
 
 ## Contributors
