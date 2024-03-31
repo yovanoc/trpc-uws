@@ -279,7 +279,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 				stopSubscription(client, sub, { id, jsonrpc });
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: `Duplicate id ${id}`,
+					message: `Duplicate id ${String(id)}`,
 				});
 			}
 

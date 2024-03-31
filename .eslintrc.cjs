@@ -15,7 +15,7 @@ module.exports = {
 	ignorePatterns: ["!.*", "coverage", "lib", "node_modules", "pnpm-lock.yaml"],
 	overrides: [
 		{
-			extends: ["plugin:markdown/recommended"],
+			extends: ["plugin:markdown/recommended-legacy"],
 			files: ["**/*.md"],
 			processor: "markdown/markdown",
 		},
@@ -83,11 +83,20 @@ module.exports = {
 			},
 		},
 		{
+			extends: ["plugin:package-json/recommended"],
+			files: ["package.json"],
+			parser: "jsonc-eslint-parser",
+			plugins: ["package-json"],
+		},
+		{
 			files: "**/*.test.ts",
 			rules: {
 				// These on-by-default rules aren't useful in test files.
 				"@typescript-eslint/no-unsafe-assignment": "off",
 				"@typescript-eslint/no-unsafe-call": "off",
+
+				// temporary off
+				"@typescript-eslint/restrict-template-expressions": "off",
 			},
 		},
 		{
@@ -118,7 +127,6 @@ module.exports = {
 		"@typescript-eslint",
 		"deprecation",
 		"jsdoc",
-		"no-only-tests",
 		"perfectionist",
 		"regexp",
 		"vitest",
@@ -128,7 +136,6 @@ module.exports = {
 	rules: {
 		// These off/less-strict-by-default rules work well for this repo and we like them on.
 		"@typescript-eslint/no-unused-vars": ["error", { caughtErrors: "all" }],
-		"no-only-tests/no-only-tests": "error",
 
 		// These on-by-default rules don't work well for this repo and we like them off.
 		"no-case-declarations": "off",

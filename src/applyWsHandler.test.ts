@@ -234,6 +234,7 @@ const linkSpy: TRPCLink<AppRouter> = () => {
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 // Source: https://github.com/trpc/trpc/blob/main/packages/tests/server/adapters/fastify.test.ts
+// eslint-disable-next-line deprecation/deprecation
 test(
 	"ugly subscription tests",
 	async () => {
@@ -317,6 +318,7 @@ test(
 	},
 );
 
+// eslint-disable-next-line deprecation/deprecation
 test.skip(
 	"subscription failed context",
 	async () => {
