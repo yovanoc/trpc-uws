@@ -11,6 +11,9 @@
 	"words": [
 		"knip",
 		"packagejson",
+		"tseslint",
+		"tsup",
+		"vitest",
 		"tsup",
 		"YOVANOVITCH",
 		"unws",
