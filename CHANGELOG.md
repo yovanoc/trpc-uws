@@ -1,3 +1,9 @@
+# [0.9.0](https://github.com/yovanoc/trpc-uws/compare/0.8.0...0.9.0) (2024-06-16)
+
+### Features
+
+- upgrade deps ([91de162](https://github.com/yovanoc/trpc-uws/commit/91de1623d0b2076146731865c9002ac302b9ae7c))
+
 # [0.8.0](https://github.com/yovanoc/trpc-uws/compare/0.7.0...0.8.0) (2024-03-31)
 
 ### Features
