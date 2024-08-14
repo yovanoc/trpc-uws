@@ -1,6 +1,6 @@
 {
 	"name": "trpc-uws",
-	"version": "0.9.0",
+	"version": "0.10.0",
 	"description": "tRPC adapter for uWebSockets.js server",
 	"repository": {
 		"type": "git",

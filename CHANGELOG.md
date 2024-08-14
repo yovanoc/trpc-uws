@@ -1,3 +1,13 @@
+# [0.10.0](https://github.com/yovanoc/trpc-uws/compare/0.9.0...0.10.0) (2024-08-14)
+
+### Bug Fixes
+
+- eslint config ([4cb72a1](https://github.com/yovanoc/trpc-uws/commit/4cb72a1e3815a6efd63b6e46e70454d7fbe8791f))
+
+### Features
+
+- new version ([31552bd](https://github.com/yovanoc/trpc-uws/commit/31552bd34dceccdb3ae739a491c1dfa288418a41))
+
 # [0.9.0](https://github.com/yovanoc/trpc-uws/compare/0.8.0...0.9.0) (2024-06-16)
 
 ### Features
