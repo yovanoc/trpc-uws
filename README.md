@@ -22,6 +22,7 @@ npm i trpc-uws
 ```
 
 ```ts
+// eslint-disable-next-line n/no-missing-import
 import { greet } from "trpc-uws";
 
 greet("Hello, world! 💖");

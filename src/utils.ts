@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+// eslint-disable-next-line n/no-missing-import
 import { HttpRequest, HttpResponse } from "uWebSockets.js";
 
 import type {
@@ -15,6 +16,7 @@ export type TrpcBody =
 
 export const getPostBody = <
 	// TRouter extends AnyRouter,
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 	TRequest extends WrappedHTTPRequest,
 	// TResponse extends WrappedHTTPResponse,
 >(

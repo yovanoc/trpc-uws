@@ -1,22 +1,23 @@
 import {
-	TRPCClientError,
-	TRPCLink,
 	createTRPCClient,
 	createWSClient,
 	httpBatchLink,
 	splitLink,
+	TRPCClientError,
+	TRPCLink,
 	// unstable_httpBatchStreamLink,
 	wsLink,
 } from "@trpc/client";
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import EventEmitter from "events";
-import uWs from "uWebSockets.js";
 import { WebSocket } from "unws";
+// eslint-disable-next-line n/no-missing-import
+import uWs from "uWebSockets.js";
 import { afterEach, beforeEach, expect, expectTypeOf, test, vi } from "vitest";
 import { z } from "zod";
 
-import { type CreateWSSContextFnOptions, applyWSHandler } from "./index.js";
+import { applyWSHandler, type CreateWSSContextFnOptions } from "./index.js";
 
 const testPort = 8798;
 
@@ -56,6 +57,7 @@ function makeRouter() {
 
 export type AppRouter = ReturnType<typeof makeRouter>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function makeContext() {
 	const createContext = ({ req, res }: CreateWSSContextFnOptions) => {
 		const getUser = () => {
@@ -147,12 +149,12 @@ async function startServer() {
 function makeClientWithWs(headers: Record<string, string>) {
 	const host = `localhost:${testPort}/trpc`;
 	const wsClient = createWSClient({
-		WebSocket,
 		retryDelayMs: (i) => {
 			console.log("retrying connection in ws", i);
 			return 200;
 		},
 		url: `ws://${host}`,
+		WebSocket,
 	});
 	const client = createTRPCClient<AppRouter>({
 		links: [
@@ -234,7 +236,6 @@ const linkSpy: TRPCLink<AppRouter> = () => {
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 // Source: https://github.com/trpc/trpc/blob/main/packages/tests/server/adapters/fastify.test.ts
-// eslint-disable-next-line deprecation/deprecation
 test(
 	"ugly subscription tests",
 	async () => {
@@ -318,7 +319,6 @@ test(
 	},
 );
 
-// eslint-disable-next-line deprecation/deprecation
 test.skip(
 	"subscription failed context",
 	async () => {
@@ -326,12 +326,12 @@ test.skip(
 		// const host = `localhost:${testPort}/trpc?user=user1`; // weClient can inject values via query string
 		const host = `localhost:${testPort}/trpc?user=user1&fail=yes`; // weClient can inject values via query string
 		const wsClient = createWSClient({
-			WebSocket,
 			retryDelayMs: (i) => {
 				console.log("retrying connection in subscription only", i);
 				return 200;
 			},
 			url: `ws://${host}`,
+			WebSocket,
 		});
 
 		const client = createTRPCClient<AppRouter>({
