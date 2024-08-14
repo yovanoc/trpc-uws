@@ -1,6 +1,7 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import EventEmitter from "events";
+// eslint-disable-next-line n/no-missing-import
 import uWs from "uWebSockets.js";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import { z } from "zod";
@@ -63,6 +64,7 @@ function makeRouter() {
 
 export type AppRouter = ReturnType<typeof makeRouter>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function makeContext() {
 	const createContext = ({ req, res }: CreateContextOptions) => {
 		const getUser = () => {

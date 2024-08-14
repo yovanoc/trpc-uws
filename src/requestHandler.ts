@@ -6,9 +6,9 @@ import {
 } from "@trpc/server/http";
 
 import {
+	uHTTPRequestHandlerOptions,
 	type WrappedHTTPRequest,
 	type WrappedHTTPResponse,
-	uHTTPRequestHandlerOptions,
 } from "./types.js";
 
 export function uWsHTTPRequestHandler<

@@ -2,25 +2,25 @@ import type { BaseHandlerOptions } from "@trpc/server/http";
 
 import {
 	AnyRouter,
-	TRPCError,
 	callProcedure,
 	getTRPCErrorFromUnknown,
 	inferRouterContext,
 	transformTRPCResponse,
+	TRPCError,
 } from "@trpc/server";
 import { type NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
-import { Unsubscribable, isObservable } from "@trpc/server/observable";
+import { isObservable, Unsubscribable } from "@trpc/server/observable";
 import {
 	JSONRPC2,
+	parseTRPCMessage,
 	TRPCClientOutgoingMessage,
 	TRPCReconnectNotification,
 	TRPCResponseMessage,
-	parseTRPCMessage,
 } from "@trpc/server/rpc";
 import { getErrorShape } from "@trpc/server/shared";
 import {
-	type RouterRecord,
 	getCauseFromUnknown,
+	type RouterRecord,
 } from "@trpc/server/unstable-core-do-not-import";
 import {
 	type CompressOptions,
@@ -28,6 +28,7 @@ import {
 	SHARED_COMPRESSOR,
 	TemplatedApp,
 	WebSocket,
+	// eslint-disable-next-line n/no-missing-import
 } from "uWebSockets.js";
 
 import {
@@ -60,15 +61,11 @@ interface UWSBuiltInOpts {
 	sendPingsAutomatically?: boolean;
 }
 
-/**
- */
 export type CreateWSSContextFnOptions = Omit<
 	NodeHTTPCreateContextFnOptions<WrappedHTTPRequest, WrappedHttpResponseWS>,
 	"info"
 >;
 
-/**
- */
 export type CreateWSSContextFn<TRouter extends AnyRouter> = (
 	opts: CreateWSSContextFnOptions,
 ) => MaybePromise<inferRouterContext<TRouter>>;
@@ -76,20 +73,18 @@ export type CreateWSSContextFn<TRouter extends AnyRouter> = (
 /**
  * Web socket server handler
  */
-export type WSSHandlerOptions<TRouter extends AnyRouter> = BaseHandlerOptions<
-	TRouter,
-	WrappedHTTPRequest
-> &
+export type WSSHandlerOptions<TRouter extends AnyRouter> = {
+	app: TemplatedApp;
+	process?: NodeJS.Process;
+} & BaseHandlerOptions<TRouter, WrappedHTTPRequest> &
 	(object extends inferRouterContext<TRouter>
 		? {
 				createContext?: CreateWSSContextFn<TRouter>;
 			}
 		: {
 				createContext: CreateWSSContextFn<TRouter>;
-			}) & {
-		app: TemplatedApp;
-		process?: NodeJS.Process;
-	} & UWSBuiltInOpts;
+			}) &
+	UWSBuiltInOpts;
 
 interface UserData<TRouter extends AnyRouter> {
 	ctx: inferRouterContext<TRouter> | undefined;
@@ -143,7 +138,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 	const stopSubscription = (
 		client: WebSocket<UserData<TRouter>>,
 		subscription: Unsubscribable,
-		{ id, jsonrpc }: JSONRPC2.BaseEnvelope & { id: JSONRPC2.RequestId },
+		{ id, jsonrpc }: { id: JSONRPC2.RequestId } & JSONRPC2.BaseEnvelope,
 	) => {
 		subscription.unsubscribe();
 
@@ -191,6 +186,7 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 
 		const type = msg.method;
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const result = await callProcedure({
 				ctx: wsData.ctx,
 				// eslint-disable-next-line @typescript-eslint/require-await

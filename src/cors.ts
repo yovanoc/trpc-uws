@@ -8,7 +8,7 @@
 
 import type { WrappedHTTPRequest } from "./types.js";
 
-type StaticOrigin = (RegExp | boolean | string)[] | RegExp | boolean | string;
+type StaticOrigin = (boolean | RegExp | string)[] | boolean | RegExp | string;
 
 type OriginFn = (
 	origin: string | undefined,

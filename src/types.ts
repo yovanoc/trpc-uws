@@ -43,17 +43,17 @@ export type uHTTPHandlerOptions<
 	TRouter extends AnyRouter,
 	TRequest extends WrappedHTTPRequest,
 	TResponse extends WrappedHTTPResponse,
-> = HTTPBaseHandlerOptions<TRouter, TRequest> &
-	NodeHTTPCreateContextOption<TRouter, TRequest, TResponse> & {
-		cors?: CorsOptions;
-		// experimental_contentTypeHandlers?: NodeHTTPContentTypeHandler<
-		//   TRequest,
-		//   TResponse
-		// >[];
-		enableSubscriptions?: boolean;
-		maxBodySize?: number;
-		middleware?: ConnectMiddleware;
-	};
+> = {
+	cors?: CorsOptions;
+	// experimental_contentTypeHandlers?: NodeHTTPContentTypeHandler<
+	//   TRequest,
+	//   TResponse
+	// >[];
+	enableSubscriptions?: boolean;
+	maxBodySize?: number;
+	middleware?: ConnectMiddleware;
+} & HTTPBaseHandlerOptions<TRouter, TRequest> &
+	NodeHTTPCreateContextOption<TRouter, TRequest, TResponse>;
 
 export type uHTTPRequestHandlerOptions<
 	TRouter extends AnyRouter,
