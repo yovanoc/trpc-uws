@@ -1,3 +1,14 @@
+# [0.11.0](https://github.com/yovanoc/trpc-uws/compare/0.10.0...0.11.0) (2024-09-07)
+
+### Bug Fixes
+
+- deprecated ([eaafe59](https://github.com/yovanoc/trpc-uws/commit/eaafe592ffa15d1850b3c0e9b05c8abc4cff6007))
+- lint ([1c81afc](https://github.com/yovanoc/trpc-uws/commit/1c81afcb6a51ebba9af2bc5794f41e5f35914e6a))
+
+### Features
+
+- upgrade uws ([770bd26](https://github.com/yovanoc/trpc-uws/commit/770bd269bfa1afc8a78a1a5a4fa53acae5941e70))
+
 # [0.10.0](https://github.com/yovanoc/trpc-uws/compare/0.9.0...0.10.0) (2024-08-14)
 
 ### Bug Fixes
