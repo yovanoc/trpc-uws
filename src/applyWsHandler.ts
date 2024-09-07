@@ -43,7 +43,7 @@ import {
 
 interface UWSBuiltInOpts {
 	/** Whether or not we should automatically close the socket when a message is dropped due to backpressure. Defaults to false. */
-	closeOnBackpressureLimit?: number;
+	closeOnBackpressureLimit?: boolean;
 	/** What per message-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
 	compression?: CompressOptions;
 	/**
@@ -113,6 +113,13 @@ export const applyWSHandler = <TRouter extends AnyRouter>(
 		client: WebSocket<UserData<TRouter>>,
 		untransformedJSON: TRPCResponseMessage,
 	) => {
+		if (!allClientsSubscriptions.has(client.getUserData().id)) {
+			// if the client is not in the set, it means the client is not connected
+			// and there will be an error thrown by uWebSockets.js
+			// if we try to send a message to it
+			return;
+		}
+
 		client.send(
 			JSON.stringify(
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
