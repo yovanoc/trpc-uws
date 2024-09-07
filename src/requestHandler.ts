@@ -53,7 +53,7 @@ export function uWsHTTPRequestHandler<
 		};
 
 		const result = await resolveHTTPResponse({
-			batching: opts.batching,
+			allowBatching: opts.allowBatching,
 			createContext,
 			error: bodyResult.ok ? null : bodyResult.error,
 			onError(o) {
