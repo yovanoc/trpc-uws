@@ -13,7 +13,7 @@ importers:
         version: 11.0.0-rc.342
       uWebSockets.js:
         specifier: github:uNetworking/uWebSockets.js#v20.50.0
-        version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9
+        version: git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9
     devDependencies:
       '@eslint-community/eslint-plugin-eslint-comments':
         specifier: ^4.4.0
@@ -1518,8 +1518,8 @@ packages:
       typescript:
         optional: true
 
-  cross-spawn@7.0.3:
-    resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
+  cross-spawn@7.0.6:
+    resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
   crypto-random-string@4.0.0:
@@ -3481,8 +3481,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9:
-    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9:
+    resolution: {commit: 23d415aa8be2e587009f67b16436f92b3c52cfe9, repo: git@github.com:uNetworking/uWebSockets.js.git, type: git}
     version: 20.50.0
 
   uc.micro@1.0.6:
@@ -4986,7 +4986,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.5.4
 
-  cross-spawn@7.0.3:
+  cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
       shebang-command: 2.0.0
@@ -5379,7 +5379,7 @@ snapshots:
       '@nodelib/fs.walk': 1.2.8
       ajv: 6.12.6
       chalk: 4.1.2
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       debug: 4.3.7
       escape-string-regexp: 4.0.0
       eslint-scope: 8.0.2
@@ -5441,7 +5441,7 @@ snapshots:
 
   execa@5.1.1:
     dependencies:
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       get-stream: 6.0.1
       human-signals: 2.1.0
       is-stream: 2.0.1
@@ -5453,7 +5453,7 @@ snapshots:
 
   execa@8.0.1:
     dependencies:
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       get-stream: 8.0.1
       human-signals: 5.0.0
       is-stream: 3.0.0
@@ -5532,7 +5532,7 @@ snapshots:
 
   foreground-child@3.3.0:
     dependencies:
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
   form-data-encoder@2.1.4: {}
@@ -7083,7 +7083,7 @@ snapshots:
 
   typescript@5.5.4: {}
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9: {}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9: {}
 
   uc.micro@1.0.6: {}
 
