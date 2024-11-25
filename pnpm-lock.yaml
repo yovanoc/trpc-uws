@@ -12,8 +12,8 @@ importers:
         specifier: 11.0.0-rc.342
         version: 11.0.0-rc.342
       uWebSockets.js:
-        specifier: github:uNetworking/uWebSockets.js#v20.48.0
-        version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/51ae1d1fd92dff77cbbdc7c431021f85578da1a6
+        specifier: github:uNetworking/uWebSockets.js#v20.50.0
+        version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9
     devDependencies:
       '@eslint-community/eslint-plugin-eslint-comments':
         specifier: ^4.4.0
@@ -3481,9 +3481,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/51ae1d1fd92dff77cbbdc7c431021f85578da1a6:
-    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/51ae1d1fd92dff77cbbdc7c431021f85578da1a6}
-    version: 20.48.0
+  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9:
+    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9}
+    version: 20.50.0
 
   uc.micro@1.0.6:
     resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
@@ -7083,7 +7083,7 @@ snapshots:
 
   typescript@5.5.4: {}
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/51ae1d1fd92dff77cbbdc7c431021f85578da1a6: {}
+  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9: {}
 
   uc.micro@1.0.6: {}
 
