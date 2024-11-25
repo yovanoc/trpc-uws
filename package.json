@@ -37,7 +37,7 @@
 	},
 	"dependencies": {
 		"@trpc/server": "11.0.0-rc.342",
-		"uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.48.0"
+		"uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.50.0"
 	},
 	"devDependencies": {
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.4.0",
