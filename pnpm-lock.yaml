@@ -13,7 +13,7 @@ importers:
         version: 11.0.0-rc.342
       uWebSockets.js:
         specifier: github:uNetworking/uWebSockets.js#v20.50.0
-        version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9
+        version: git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9
     devDependencies:
       '@eslint-community/eslint-plugin-eslint-comments':
         specifier: ^4.4.0
@@ -2665,8 +2665,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  nanoid@3.3.7:
-    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
+  nanoid@3.3.8:
+    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -3481,8 +3481,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9:
-    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9:
+    resolution: {commit: 23d415aa8be2e587009f67b16436f92b3c52cfe9, repo: git@github.com:uNetworking/uWebSockets.js.git, type: git}
     version: 20.50.0
 
   uc.micro@1.0.6:
@@ -6253,7 +6253,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  nanoid@3.3.7: {}
+  nanoid@3.3.8: {}
 
   natural-compare-lite@1.4.0: {}
 
@@ -6510,7 +6510,7 @@ snapshots:
 
   postcss@8.4.45:
     dependencies:
-      nanoid: 3.3.7
+      nanoid: 3.3.8
       picocolors: 1.1.0
       source-map-js: 1.2.0
 
@@ -7083,7 +7083,7 @@ snapshots:
 
   typescript@5.5.4: {}
 
-  uWebSockets.js@https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/23d415aa8be2e587009f67b16436f92b3c52cfe9: {}
+  uWebSockets.js@git+https://git@github.com:uNetworking/uWebSockets.js.git#23d415aa8be2e587009f67b16436f92b3c52cfe9: {}
 
   uc.micro@1.0.6: {}
 
